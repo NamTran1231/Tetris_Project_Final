@@ -27,9 +27,12 @@ public class Piece {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-        this.shape[i][j] = SHAPES[type][i][j];
+                this.shape[i][j] = SHAPES[type][i][j];
+            }
         }
     }
-}
     
+
+    //Getters
+    public int [][] getShape() { return shape; }
 }
