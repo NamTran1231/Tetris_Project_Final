@@ -35,6 +35,22 @@ public class Piece {
         }
     }
     
+    //Method clone()
+    public Piece clone() {
+    Piece copy = new Piece(this.type);
+    copy.x = this.x;
+    copy.y = this.y;
+
+    int rows = this.shape.length;
+    int cols = this.shape[0].length;
+    copy.shape = new int[rows][cols];
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            copy.shape[i][j] = this.shape[i][j];
+
+    return copy;
+}
 
     //Getters
     public int [][] getShape() { return shape; }
