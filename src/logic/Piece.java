@@ -28,6 +28,9 @@ public class Piece {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
                 this.shape[i][j] = SHAPES[type][i][j];
+
+                this.x = 3;
+                this.y = 0;
             }
         }
     }
@@ -35,4 +38,12 @@ public class Piece {
 
     //Getters
     public int [][] getShape() { return shape; }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getType() { return type; }
+
+    //Setters
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public void setShape(int[][] shape) { this.shape = shape; }
 }
