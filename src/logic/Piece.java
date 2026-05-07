@@ -53,4 +53,18 @@ public class Piece {
         return copy;
     }
 
+    public void rotate() {
+    int rows = shape.length;
+    int cols = shape[0].length;
+
+    // Mảng mới kích thước đảo ngược
+    int[][] newShape = new int[cols][rows];
+
+    for (int i = 0; i < rows; i++)
+        for (int j = 0; j < cols; j++)
+            newShape[j][rows - 1 - i] = shape[i][j];
+
+    this.shape = newShape;
+}
+
 }
