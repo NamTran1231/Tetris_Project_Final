@@ -27,4 +27,36 @@ public class Board {
             if (shape[i][j] != 0)
                 grid[py + i][px + j] = piece.getType() + 1;
 }
+
+    public int clearLines() {
+    int linesCleared = 0;
+
+    for (int row = ROWS - 1; row >= 0; row--) {
+        if (isLineFull(row)) {
+            removeLine(row);
+            linesCleared++;
+            row++; 
+        }
+    }
+    return linesCleared;
+}
+
+private boolean isLineFull(int row) {
+    for (int col = 0; col < COLS; col++)
+        if (grid[row][col] == 0)
+            return false;
+    return true;
+}
+
+private void removeLine(int row) {
+    // Dồn tất cả hàng phía trên xuống 1
+    for (int r = row; r > 0; r--)
+        for (int col = 0; col < COLS; col++)
+            grid[r][col] = grid[r - 1][col];
+
+    
+    for (int col = 0; col < COLS; col++)
+        grid[0][col] = 0;
+}
+
 }
