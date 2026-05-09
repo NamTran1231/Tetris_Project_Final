@@ -59,4 +59,30 @@ private void removeLine(int row) {
         grid[0][col] = 0;
 }
 
+    public boolean isColliding(Piece piece) {
+    int[][] shape = piece.getShape();
+    int px = piece.getX();
+    int py = piece.getY();
+
+    for (int i = 0; i < shape.length; i++) {
+        for (int j = 0; j < shape[0].length; j++) {
+
+            // Bỏ qua ô trống của gạch
+            if (shape[i][j] == 0) continue;
+
+            // Tọa độ thật trên board
+            int row = py + i;
+            int col = px + j;
+
+            // Kiểm tra ra ngoài biên
+            if (row < 0 || row >= ROWS) return true;
+            if (col < 0 || col >= COLS) return true;
+
+            // Kiểm tra ô đã có gạch
+            if (grid[row][col] != 0) return true;
+        }
+    }
+    return false; // không va chạm
+}
+
 }
