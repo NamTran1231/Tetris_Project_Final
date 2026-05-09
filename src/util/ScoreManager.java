@@ -9,7 +9,7 @@ public class ScoreManager {
     private static final String SAVE_FILE = "highscore.txt";
 
     private ScoreManager() {
-        this.highscore = 0;
+        this.highscore = loadHighscore();
     }
 
     public static ScoreManager getInstance() {
@@ -47,6 +47,18 @@ public class ScoreManager {
             e.printStackTrace();
         }
     }
+
+    private int loadHighscore() {
+    try {
+        java.io.BufferedReader reader = new java.io.BufferedReader(
+            new java.io.FileReader(SAVE_FILE));
+        int saved = Integer.parseInt(reader.readLine().trim());
+        reader.close();
+        return saved;
+    } catch (Exception e) {
+        return 0;
+    }
+}
 
     public void updatehighscore (int score) {
         if (score > highscore) {
