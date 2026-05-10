@@ -20,7 +20,9 @@ public class GameWindow extends JFrame {
 
         // 3. Thêm panel
         add(panel);
-
+        setVisible(true);
+        requestFocusInWindow();
+        
         // 4. Input
         addKeyListener(new InputHandler(engine));
         setFocusable(true);
