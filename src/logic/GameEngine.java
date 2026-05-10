@@ -108,10 +108,88 @@ public class GameEngine {
         this.observer = observer;
     }
 
-    public void handleInput(String key) {
-        if (isGameOver) return;
+    public void hardDrop() {
+        while (true) {
+            currentPiece.setY(currentPiece.getY() + 1);
+            if (board.isColliding(currentPiece)) {
+                currentPiece.setY(currentPiece.getY() - 1);
+                break;
+            }
+        }
 
-        
+        board.placePiece(currentPiece);
+        currentPiece = nextPiece;
+        nextPiece = generateRandomPiece();
+
+        if (board.isColliding(currentPiece)) {
+            isGameOver = true;
+            if (observer != null) {
+                observer.onGameOver();
+            }
+            return;
+        }
     }
+
+    public void softDrop() {
+        for (int i = 0; i < 1; i++) {
+            currentPiece.setY(currentPiece.getY() + 1);
+            if (board.isColliding(currentPiece)) {
+                currentPiece.setY(currentPiece.getY() - 1);
+                board.placePiece(currentPiece);
+
+                currentPiece = nextPiece;
+                nextPiece = generateRandomPiece();
+
+                if (board.isColliding(currentPiece)) {
+                    isGameOver = true;
+                    if (observer != null) {
+                        observer.onGameOver();
+                    }
+                    return;
+                }
+                break;
+            }
+        }
+    }
+
+    public void handleInput(String key) {
+        if (isGameOver) {
+            return;
+        }
+
+        switch (key.toUpperCase()) {
+            case "LEFT":
+                currentPiece.setX(currentPiece.getX() - 1);
+                if (board.isColliding(currentPiece)) {
+                    currentPiece.setX(currentPiece.getX() + 1);
+                }
+                break;
+            case "RIGHT":
+                currentPiece.setX(currentPiece.getX() + 1);
+                if (board.isColliding(currentPiece)) {
+                    currentPiece.setX(currentPiece.getX() - 1);
+                }
+                break;
+            case "DOWN":
+                softDrop();
+                break;
+            case "ROTATE":
+                currentPiece.rotate();
+                if (board.isColliding(currentPiece)) {
+                    currentPiece.rotate();
+                    currentPiece.rotate();
+                    currentPiece.rotate();
+                }
+                break;
+            case "SPACE":
+                hardDrop();
+                break;
+        }
+
+        if (observer != null) {
+            observer.onBoardChanged(board.getGrid());
+        }
+    }
+    
 }
 
