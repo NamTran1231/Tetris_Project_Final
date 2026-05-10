@@ -1,32 +1,31 @@
 package ui;
 
+import logic.GameEngine;
 import javax.swing.JFrame;
 import javax.swing.Timer;
 
 public class GameWindow extends JFrame {
 
-    private GamePanel panel;
-
     public GameWindow() {
+        // 1. Tạo panel và engine
+        GamePanel panel = new GamePanel();
+        GameEngine engine = new GameEngine(panel);
 
-        panel = new GamePanel();
-
+        // 2. Cài đặt cửa sổ
         setTitle("Tetris");
         setSize(320, 680);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
 
-        add(panel);
+        // 3. Kết nối input với engine
+        addKeyListener(new InputHandler(engine));
+        setFocusable(true);
 
-        addKeyListener(new InputHandler(panel.getEngine()));
-
-        Timer timer = new Timer(500, e -> {
-            panel.getEngine().moveDown();
-        });
-
+        Timer timer = new Timer(500, e -> engine.tick());
         timer.start();
 
+        add(panel);
         setVisible(true);
     }
 }
