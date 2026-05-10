@@ -1,70 +1,96 @@
 package logic;
 
 import util.GameObserver;
+import java.util.Random;
 
 public class GameEngine {
+
     private Board board;
     private Piece currentPiece;
     private Piece nextPiece;
     private GameObserver observer;
-    private int score;
-    private boolean isGameOver;
-    private int level;
-    private int gravity;
-    private int gravityThreshold;
+    private Random random = new Random();
+    private int score = 0;
+    private int level = 1;
+    private boolean isGameOver = false;
 
-        public GameEngine() {
-        this.board = new Board();
-        this.score = 0;
-        this.gravity = 0;
-        this.gravityThreshold = 30;
-        this.level = 1;
-        this.isGameOver = false;
-        this.currentPiece = generateRandomPiece();
-        this.nextPiece = generateRandomPiece();
+    public GameEngine(GameObserver observer) {
+        this.observer = observer;
+        board = new Board();
+        currentPiece = new Piece(random.nextInt(7));
+        nextPiece = new Piece(random.nextInt(7));
+        updateBoard();
     }
 
-    private Piece generateRandomPiece() {
-        int type = (int) (Math.random() * Piece.SHAPES.length);
-        return new Piece(type);
-    }
-
+    // Gọi mỗi 500ms từ Timer trong GameWindow
     public void tick() {
         if (isGameOver) return;
 
-    gravity++;
-
-        int currentThreshold = Math.max(5, gravityThreshold - (level - 1) * 3);
-        
-        if (gravity >= currentThreshold) {
-            gravity = 0; 
-            currentPiece.setY(currentPiece.getY() + 1);
-        }
+        currentPiece.setY(currentPiece.getY() + 1);
 
         if (board.isColliding(currentPiece)) {
-            currentPiece.setY(currentPiece.getY() - 1); 
+            currentPiece.setY(currentPiece.getY() - 1);
             board.placePiece(currentPiece);
 
-                if (observer != null) {
-                    observer.onScoreChanged(score);
-                }
+            int cleared = board.clearLines();
+            if (cleared > 0) {
+                score += cleared * 100 * level;
+                level = score / 500 + 1;
+                observer.onScoreChanged(score);
             }
 
             currentPiece = nextPiece;
-            nextPiece = generateRandomPiece();
-            gravity = 0; 
+            nextPiece = new Piece(random.nextInt(7));
 
             if (board.isColliding(currentPiece)) {
                 isGameOver = true;
-                if (observer != null) {
-                    observer.onGameOver();
-                }
+                observer.onGameOver();
                 return;
             }
-        
-        if (observer != null) {
-            observer.onBoardChanged(board.getGrid());
         }
+
+        updateBoard();
+    }
+
+    // Gọi từ InputHandler
+    public void handleInput(String key) {
+        if (isGameOver) return;
+
+        switch (key) {
+            case "LEFT":
+                currentPiece.setX(currentPiece.getX() - 1);
+                if (board.isColliding(currentPiece))
+                    currentPiece.setX(currentPiece.getX() + 1);
+                break;
+
+            case "RIGHT":
+                currentPiece.setX(currentPiece.getX() + 1);
+                if (board.isColliding(currentPiece))
+                    currentPiece.setX(currentPiece.getX() - 1);
+                break;
+
+            case "DOWN":
+                currentPiece.setY(currentPiece.getY() + 1);
+                if (board.isColliding(currentPiece))
+                    currentPiece.setY(currentPiece.getY() - 1);
+                break;
+
+            case "UP":
+                Piece copy = currentPiece.clone();
+                copy.rotate();
+                if (!board.isColliding(copy))
+                    currentPiece.rotate();
+                break;
+
+            case "SPACE":
+                while (!board.isColliding(currentPiece))
+                    currentPiece.setY(currentPiece.getY() + 1);
+                currentPiece.setY(currentPiece.getY() - 1);
+                tick();
+                break;
+        }
+
+        updateBoard();
     }
 
     public void reset() {
@@ -72,124 +98,31 @@ public class GameEngine {
         score = 0;
         level = 1;
         isGameOver = false;
-        currentPiece = generateRandomPiece();
-        nextPiece = generateRandomPiece();
-
-        if (observer != null) {
-            observer.onBoardChanged(board.getGrid());
-        }
+        currentPiece = new Piece(random.nextInt(7));
+        nextPiece = new Piece(random.nextInt(7));
+        updateBoard();
     }
 
-    public Board getBoard() {
-        return board;
-    }
+    // Vẽ board + gạch đang rơi vào 1 grid tạm → gửi cho UI
+    private void updateBoard() {
+        int[][] tempGrid = new int[Board.ROWS][Board.COLS];
+        int[][] boardGrid = board.getGrid();
 
-    public Piece getCurrentPiece() {
-        return currentPiece;
-    }
+        for (int i = 0; i < Board.ROWS; i++)
+            for (int j = 0; j < Board.COLS; j++)
+                tempGrid[i][j] = boardGrid[i][j];
 
-    public Piece getNextPiece() {
-        return nextPiece;
-    }
-
-    public int getScore() {
-        return score;
-    }
-
-    public int getLevel() {
-        return level;
-    }
-
-    public boolean isGameOver() {
-        return isGameOver;
-    }
-    
-    public void setObserver(GameObserver observer) {
-        this.observer = observer;
-    }
-
-    public void hardDrop() {
-        while (true) {
-            currentPiece.setY(currentPiece.getY() + 1);
-            if (board.isColliding(currentPiece)) {
-                currentPiece.setY(currentPiece.getY() - 1);
-                break;
-            }
-        }
-
-        board.placePiece(currentPiece);
-        currentPiece = nextPiece;
-        nextPiece = generateRandomPiece();
-
-        if (board.isColliding(currentPiece)) {
-            isGameOver = true;
-            if (observer != null) {
-                observer.onGameOver();
-            }
-            return;
-        }
-    }
-
-    public void softDrop() {
-        for (int i = 0; i < 1; i++) {
-            currentPiece.setY(currentPiece.getY() + 1);
-            if (board.isColliding(currentPiece)) {
-                currentPiece.setY(currentPiece.getY() - 1);
-                board.placePiece(currentPiece);
-
-                currentPiece = nextPiece;
-                nextPiece = generateRandomPiece();
-
-                if (board.isColliding(currentPiece)) {
-                    isGameOver = true;
-                    if (observer != null) {
-                        observer.onGameOver();
-                    }
-                    return;
+        int[][] shape = currentPiece.getShape();
+        for (int i = 0; i < shape.length; i++)
+            for (int j = 0; j < shape[0].length; j++)
+                if (shape[i][j] != 0) {
+                    int row = currentPiece.getY() + i;
+                    int col = currentPiece.getX() + j;
+                    if (row >= 0 && row < Board.ROWS &&
+                        col >= 0 && col < Board.COLS)
+                        tempGrid[row][col] = currentPiece.getType() + 1;
                 }
-                break;
-            }
-        }
+
+        observer.onBoardChanged(tempGrid);
     }
-
-    public void handleInput(String key) {
-        if (isGameOver) {
-            return;
-        }
-
-        switch (key.toUpperCase()) {
-            case "LEFT":
-                currentPiece.setX(currentPiece.getX() - 1);
-                if (board.isColliding(currentPiece)) {
-                    currentPiece.setX(currentPiece.getX() + 1);
-                }
-                break;
-            case "RIGHT":
-                currentPiece.setX(currentPiece.getX() + 1);
-                if (board.isColliding(currentPiece)) {
-                    currentPiece.setX(currentPiece.getX() - 1);
-                }
-                break;
-            case "DOWN":
-                softDrop();
-                break;
-            case "ROTATE":
-                currentPiece.rotate();
-                if (board.isColliding(currentPiece)) {
-                    currentPiece.rotate();
-                    currentPiece.rotate();
-                    currentPiece.rotate();
-                }
-                break;
-            case "SPACE":
-                hardDrop();
-                break;
-        }
-
-        if (observer != null) {
-            observer.onBoardChanged(board.getGrid());
-        }
-    }
-    
 }
-
