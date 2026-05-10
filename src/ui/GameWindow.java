@@ -1,8 +1,8 @@
 package ui;
 
 import logic.GameEngine;
-import javax.swing.JFrame;
-import javax.swing.Timer;
+import javax.swing.*;
+import java.awt.event.*;
 
 public class GameWindow extends JFrame {
 
@@ -15,15 +15,27 @@ public class GameWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setResizable(false);
         setLocationRelativeTo(null);
-        setFocusable(true);
 
-        addKeyListener(new InputHandler(engine));
+        // Dùng KeyBinding thay KeyListener
+        InputMap im = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = panel.getActionMap();
+
+        im.put(KeyStroke.getKeyStroke("LEFT"),  "left");
+        im.put(KeyStroke.getKeyStroke("RIGHT"), "right");
+        im.put(KeyStroke.getKeyStroke("DOWN"),  "down");
+        im.put(KeyStroke.getKeyStroke("UP"),    "up");
+        im.put(KeyStroke.getKeyStroke("SPACE"), "space");
+
+        am.put("left",  new AbstractAction() { public void actionPerformed(ActionEvent e) { engine.handleInput("LEFT"); }});
+        am.put("right", new AbstractAction() { public void actionPerformed(ActionEvent e) { engine.handleInput("RIGHT"); }});
+        am.put("down",  new AbstractAction() { public void actionPerformed(ActionEvent e) { engine.handleInput("DOWN"); }});
+        am.put("up",    new AbstractAction() { public void actionPerformed(ActionEvent e) { engine.handleInput("UP"); }});
+        am.put("space", new AbstractAction() { public void actionPerformed(ActionEvent e) { engine.handleInput("SPACE"); }});
 
         Timer timer = new Timer(500, e -> engine.tick());
         timer.start();
 
         add(panel);
         setVisible(true);
-        requestFocusInWindow(); // gọi sau setVisible
     }
 }
