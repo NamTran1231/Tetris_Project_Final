@@ -7,18 +7,15 @@ public class ScoreManager {
     private static ScoreManager instance;
     private int highscore;
     private static final String SAVE_FILE = "highscore.txt";
-
     private ScoreManager() {
         this.highscore = loadHighscore();
     }
-
     public static ScoreManager getInstance() {
         if (instance == null) {
             instance = new ScoreManager();
         }
         return instance;
     }
-
     public int calculate(int lines, int level) {
         int baseScore = 0;
         switch (lines) {
@@ -39,7 +36,6 @@ public class ScoreManager {
         }
         return baseScore * level;
     }
-
         private void saveHighscore() {
         try (FileWriter writer = new FileWriter(SAVE_FILE)) {
             writer.write(Integer.toString(highscore));
@@ -47,7 +43,6 @@ public class ScoreManager {
             e.printStackTrace();
         }
     }
-
     private int loadHighscore() {
     try {
         java.io.BufferedReader reader = new java.io.BufferedReader(
@@ -59,14 +54,12 @@ public class ScoreManager {
         return 0;
     }
 }
-
     public void updatehighscore (int score) {
         if (score > highscore) {
             highscore = score;
             saveHighscore();
         }
     }
-
     public int getHighscore() {
         return highscore;
     }
