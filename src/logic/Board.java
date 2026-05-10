@@ -22,7 +22,7 @@ public class Board {
     int px = piece.getX();
     int py = piece.getY();
 
-    for (int i = 0; i < shape.length; i++)
+    for (int i = 0; i < shape.length; i++);
         for (int j = 0; j < shape[0].length; j++)
             if (shape[i][j] != 0)
                 grid[py + i][px + j] = piece.getType() + 1;
