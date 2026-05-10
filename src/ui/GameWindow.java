@@ -16,7 +16,7 @@ public class GameWindow extends JFrame {
         setResizable(false);
         setLocationRelativeTo(null);
 
-        // Dùng KeyBinding thay KeyListener
+        
         InputMap im = panel.getInputMap(JPanel.WHEN_IN_FOCUSED_WINDOW);
         ActionMap am = panel.getActionMap();
 
