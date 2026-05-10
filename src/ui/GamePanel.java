@@ -1,7 +1,7 @@
 package ui;
 
-import logic.GameEngine;
 import util.GameObserver;
+import util.ScoreManager;
 
 import javax.swing.JPanel;
 import java.awt.Graphics;
@@ -15,7 +15,6 @@ public class GamePanel extends JPanel implements GameObserver {
     private boolean gameOver = false;
 
     public GamePanel() {
-      
     }
 
     @Override
@@ -25,27 +24,43 @@ public class GamePanel extends JPanel implements GameObserver {
         int blockSize = 30;
 
         if (gameOver) {
+            g.setColor(Color.BLACK);
+            g.fillRect(0, 0, getWidth(), getHeight());
+
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("GAME OVER", 40, 250);
+            g.drawString("GAME OVER", 40, 220);
+
             g.setColor(Color.WHITE);
-            g.setFont(new Font("Arial", Font.BOLD, 20));
-            g.drawString("Final Score: " + score, 80, 300);
+            g.setFont(new Font("Arial", Font.BOLD, 24));
+            g.drawString("Score:  " + score, 80, 270);
+            g.drawString("Best:   " + ScoreManager.getInstance().getHighscore(), 80, 310);
+
             return;
         }
 
+        // Nền đen
+        g.setColor(Color.BLACK);
+        g.fillRect(0, 0, getWidth(), getHeight());
+
+        // Score và highscore
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 20));
+        g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("Score: " + score, 10, 25);
 
+        g.setColor(Color.YELLOW);
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("Best:  " + ScoreManager.getInstance().getHighscore(), 10, 48);
+
+        // Vẽ grid
         for (int row = 0; row < 20; row++) {
             for (int col = 0; col < 10; col++) {
                 if (grid[row][col] != 0) {
                     g.setColor(getColor(grid[row][col]));
-                    g.fillRect(col * blockSize, row * blockSize + 40, blockSize, blockSize);
+                    g.fillRect(col * blockSize, row * blockSize + 35, blockSize - 1, blockSize - 1);
                 }
-                g.setColor(Color.GRAY);
-                g.drawRect(col * blockSize, row * blockSize + 40, blockSize, blockSize);
+                g.setColor(Color.DARK_GRAY);
+                g.drawRect(col * blockSize, row * blockSize + 35, blockSize, blockSize);
             }
         }
     }
@@ -78,6 +93,7 @@ public class GamePanel extends JPanel implements GameObserver {
     @Override
     public void onGameOver() {
         gameOver = true;
+        ScoreManager.getInstance().updatehighscore(score);
         repaint();
     }
 }
