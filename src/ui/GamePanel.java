@@ -1,61 +1,63 @@
 package ui;
 
+import logic.GameEngine;
 import util.GameObserver;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Random;
 
 public class GamePanel extends JPanel implements GameObserver {
 
-    private int blockRow = 0;
-    private int blockCol = 4;
-    private boolean vertical = true;
-    private Random random = new Random();
-    private Color pieceColor = Color.CYAN;
-    private int pieceType = 0;
+    private int[][] grid = new int[20][10];
     private int score = 0;
     private boolean gameOver = false;
 
-    private Timer timer;
+    private GameEngine engine;
 
     public GamePanel() {
+        engine = new GameEngine(this);
+    }
 
-        timer = new Timer(500, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!gameOver) {
-                    moveDown();
-                }
-            }
-        });
-
-        timer.start();
+    public GameEngine getEngine() {
+        return engine;
     }
 
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+
         int blockSize = 30;
+
         if (gameOver) {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 40));
-            g.drawString("GAME OVER", 50, 250);
+            g.drawString("GAME OVER", 40, 250);
+
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 20));
-            g.drawString("Final Score: " + score, 90, 300);
+            g.drawString("Final Score: " + score, 80, 300);
             return;
         }
+
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 10, 25);
+
         for (int row = 0; row < 20; row++) {
             for (int col = 0; col < 10; col++) {
+
+                if (grid[row][col] != 0) {
+                    g.setColor(getColor(grid[row][col]));
+                    g.fillRect(
+                            col * blockSize,
+                            row * blockSize + 40,
+                            blockSize,
+                            blockSize
+                    );
+                }
+
                 g.setColor(Color.GRAY);
                 g.drawRect(
                         col * blockSize,
@@ -65,108 +67,24 @@ public class GamePanel extends JPanel implements GameObserver {
                 );
             }
         }
-        g.setColor(pieceColor);
-
-        int yOffset = 40;
-
-        if (pieceType == 0) {
-
-            for (int i = 0; i < 4; i++) {
-                if (vertical) {
-                    g.fillRect(
-                            blockCol * blockSize,
-                            (blockRow + i) * blockSize + yOffset,
-                            blockSize,
-                            blockSize
-                    );
-                } else {
-                    g.fillRect(
-                            (blockCol + i) * blockSize,
-                            blockRow * blockSize + yOffset,
-                            blockSize,
-                            blockSize
-                    );
-                }
-            }
-
-        } else if (pieceType == 1) {
-
-            g.fillRect(blockCol * blockSize, blockRow * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect((blockCol + 1) * blockSize, blockRow * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect(blockCol * blockSize, (blockRow + 1) * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect((blockCol + 1) * blockSize, (blockRow + 1) * blockSize + yOffset, blockSize, blockSize);
-
-        } else {
-
-            g.fillRect(blockCol * blockSize, blockRow * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect((blockCol + 1) * blockSize, blockRow * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect((blockCol + 2) * blockSize, blockRow * blockSize + yOffset, blockSize, blockSize);
-            g.fillRect((blockCol + 1) * blockSize, (blockRow + 1) * blockSize + yOffset, blockSize, blockSize);
-        }
     }
 
-    public void moveLeft() {
-        if (!gameOver && blockCol > 0) {
-            blockCol--;
-            repaint();
-        }
-    }
-
-    public void moveRight() {
-        if (!gameOver && blockCol < 7) {
-            blockCol++;
-            repaint();
-        }
-    }
-
-    public void moveDown() {
-        if (blockRow < 18) {
-            blockRow++;
-        } else {
-            spawnNewPiece();
-        }
-        repaint();
-    }
-
-    public void rotate() {
-        if (!gameOver && pieceType != 1) {
-            vertical = !vertical;
-            repaint();
-        }
-    }
-
-    public void spawnNewPiece() {
-        blockRow = 0;
-        blockCol = random.nextInt(7);
-        pieceType = random.nextInt(3);
-        vertical = random.nextBoolean();
-        score += 10;
-        if (score >= 100) {
-            onGameOver();
-            return;
-        }
-        int colorIndex = random.nextInt(5);
-        switch (colorIndex) {
-            case 0:
-                pieceColor = Color.CYAN;
-                break;
-            case 1:
-                pieceColor = Color.RED;
-                break;
-            case 2:
-                pieceColor = Color.GREEN;
-                break;
-            case 3:
-                pieceColor = Color.YELLOW;
-                break;
-            case 4:
-                pieceColor = Color.MAGENTA;
-                break;
+    private Color getColor(int type) {
+        switch (type) {
+            case 1: return Color.CYAN;
+            case 2: return Color.YELLOW;
+            case 3: return Color.MAGENTA;
+            case 4: return Color.GREEN;
+            case 5: return Color.RED;
+            case 6: return Color.ORANGE;
+            case 7: return Color.BLUE;
+            default: return Color.WHITE;
         }
     }
 
     @Override
     public void onBoardChanged(int[][] board) {
+        this.grid = board;
         repaint();
     }
 
@@ -179,7 +97,6 @@ public class GamePanel extends JPanel implements GameObserver {
     @Override
     public void onGameOver() {
         gameOver = true;
-        timer.stop();
         repaint();
     }
 }

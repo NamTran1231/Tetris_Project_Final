@@ -1,14 +1,16 @@
 package ui;
 
+import logic.GameEngine;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class InputHandler extends KeyAdapter {
 
-    private GamePanel panel;
+    private GameEngine engine;
 
-    public InputHandler(GamePanel panel) {
-        this.panel = panel;
+    public InputHandler(GameEngine engine) {
+        this.engine = engine;
     }
 
     @Override
@@ -17,19 +19,19 @@ public class InputHandler extends KeyAdapter {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_LEFT:
-                panel.moveLeft();
+                engine.moveLeft();
                 break;
 
             case KeyEvent.VK_RIGHT:
-                panel.moveRight();
+                engine.moveRight();
                 break;
 
             case KeyEvent.VK_DOWN:
-                panel.moveDown();
+                engine.moveDown();
                 break;
 
             case KeyEvent.VK_UP:
-                panel.rotate();
+                engine.rotate();
                 break;
         }
     }

@@ -16,6 +16,9 @@ public class Piece {
     private int x, y;
     private int type;
 
+    public Piece() {
+        this((int)(Math.random() * SHAPES.length));
+    }
     public Piece(int type) {
         this.type = type;
         int rows = SHAPES[type].length;
@@ -62,5 +65,23 @@ public class Piece {
     // Setters
     public void setX(int x) { this.x = x; }
     public void setY(int y) { this.y = y; }
-    public void setShape(int[][] shape) { this.shape = shape; }
+    public void setShape(int[][] shape) {
+        this.shape = shape;
+    }
+
+    public void moveLeft() {
+        x--;
+    }
+
+    public void moveRight() {
+        x++;
+    }
+
+    public void moveDown() {
+        y++;
+    }
+
+    public void moveUp() {
+        y--;
+    }
 }
