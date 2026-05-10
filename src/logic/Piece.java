@@ -16,6 +16,9 @@ public class Piece {
     private int x, y;
     private int type;
 
+    public Piece() {
+        this((int)(Math.random() * SHAPES.length));
+    }
     public Piece(int type) {
         this.type = type;
         int rows = SHAPES[type].length;
@@ -27,17 +30,6 @@ public class Piece {
         this.x = 3;
         this.y = 0;
     }
-
-    // Getters
-    public int[][] getShape() { return shape; }
-    public int getX() { return x; }
-    public int getY() { return y; }
-    public int getType() { return type; }
-
-    // Setters
-    public void setX(int x) { this.x = x; }
-    public void setY(int y) { this.y = y; }
-    public void setShape(int[][] shape) { this.shape = shape; }
 
     // Clone
     public Piece clone() {
@@ -53,18 +45,43 @@ public class Piece {
         return copy;
     }
 
+    // Rotate
     public void rotate() {
-    int rows = shape.length;
-    int cols = shape[0].length;
+        int rows = shape.length;
+        int cols = shape[0].length;
+        int[][] newShape = new int[cols][rows];
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                newShape[j][rows - 1 - i] = shape[i][j];
+        this.shape = newShape;
+    }
 
-    // Mảng mới kích thước đảo ngược
-    int[][] newShape = new int[cols][rows];
+    // Getters
+    public int[][] getShape() { return shape; }
+    public int getX() { return x; }
+    public int getY() { return y; }
+    public int getType() { return type; }
 
-    for (int i = 0; i < rows; i++)
-        for (int j = 0; j < cols; j++)
-            newShape[j][rows - 1 - i] = shape[i][j];
+    // Setters
+    public void setX(int x) { this.x = x; }
+    public void setY(int y) { this.y = y; }
+    public void setShape(int[][] shape) {
+        this.shape = shape;
+    }
 
-    this.shape = newShape;
-}
+    public void moveLeft() {
+        x--;
+    }
 
+    public void moveRight() {
+        x++;
+    }
+
+    public void moveDown() {
+        y++;
+    }
+
+    public void moveUp() {
+        y--;
+    }
 }
