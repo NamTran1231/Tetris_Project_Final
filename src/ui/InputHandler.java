@@ -19,19 +19,19 @@ public class InputHandler extends KeyAdapter {
         switch (e.getKeyCode()) {
 
             case KeyEvent.VK_LEFT:
-                engine.moveLeft();
+                engine.handleInput("LEFT");
                 break;
 
             case KeyEvent.VK_RIGHT:
-                engine.moveRight();
+                engine.handleInput("RIGHT");
                 break;
 
             case KeyEvent.VK_DOWN:
-                engine.moveDown();
+                engine.handleInput("DOWN");
                 break;
 
             case KeyEvent.VK_UP:
-                engine.rotate();
+                engine.handleInput("UP");
                 break;
         }
     }

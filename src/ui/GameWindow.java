@@ -22,7 +22,7 @@ public class GameWindow extends JFrame {
         addKeyListener(new InputHandler(panel.getEngine()));
 
         Timer timer = new Timer(500, e -> {
-            panel.getEngine().moveDown();
+            panel.getEngine().tick();
         });
 
         timer.start();
