@@ -10,10 +10,14 @@ public class GameEngine {
     private int score;
     private boolean isGameOver;
     private int level;
+    private int gravity;
+    private int gravityThreshold;
 
         public GameEngine() {
         this.board = new Board();
         this.score = 0;
+        this.gravity = 0;
+        this.gravityThreshold = 30;
         this.level = 1;
         this.isGameOver = false;
         this.currentPiece = generateRandomPiece();
@@ -23,6 +27,44 @@ public class GameEngine {
     private Piece generateRandomPiece() {
         int type = (int) (Math.random() * Piece.SHAPES.length);
         return new Piece(type);
+    }
+
+    public void tick() {
+        if (isGameOver) return;
+
+    gravity++;
+
+        int currentThreshold = Math.max(5, gravityThreshold - (level - 1) * 3);
+        
+        if (gravity >= currentThreshold) {
+            gravity = 0; 
+            currentPiece.setY(currentPiece.getY() + 1);
+        }
+
+        if (board.isColliding(currentPiece)) {
+            currentPiece.setY(currentPiece.getY() - 1); 
+            board.placePiece(currentPiece);
+
+                if (observer != null) {
+                    observer.onScoreChanged(score);
+                }
+            }
+
+            currentPiece = nextPiece;
+            nextPiece = generateRandomPiece();
+            gravity = 0; 
+
+            if (board.isColliding(currentPiece)) {
+                isGameOver = true;
+                if (observer != null) {
+                    observer.onGameOver();
+                }
+                return;
+            }
+        
+        if (observer != null) {
+            observer.onBoardChanged(board.getGrid());
+        }
     }
 
     public void reset() {
@@ -60,6 +102,16 @@ public class GameEngine {
 
     public boolean isGameOver() {
         return isGameOver;
-    }    
+    }
+    
+    public void setObserver(GameObserver observer) {
+        this.observer = observer;
+    }
+
+    public void handleInput(String key) {
+        if (isGameOver) return;
+
+        
+    }
 }
 
