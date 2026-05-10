@@ -14,14 +14,8 @@ public class GamePanel extends JPanel implements GameObserver {
     private int score = 0;
     private boolean gameOver = false;
 
-    private GameEngine engine;
-
     public GamePanel() {
-        engine = new GameEngine(this);
-    }
-
-    public GameEngine getEngine() {
-        return engine;
+      
     }
 
     @Override
@@ -34,7 +28,6 @@ public class GamePanel extends JPanel implements GameObserver {
             g.setColor(Color.RED);
             g.setFont(new Font("Arial", Font.BOLD, 40));
             g.drawString("GAME OVER", 40, 250);
-
             g.setColor(Color.WHITE);
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString("Final Score: " + score, 80, 300);
@@ -47,24 +40,12 @@ public class GamePanel extends JPanel implements GameObserver {
 
         for (int row = 0; row < 20; row++) {
             for (int col = 0; col < 10; col++) {
-
                 if (grid[row][col] != 0) {
                     g.setColor(getColor(grid[row][col]));
-                    g.fillRect(
-                            col * blockSize,
-                            row * blockSize + 40,
-                            blockSize,
-                            blockSize
-                    );
+                    g.fillRect(col * blockSize, row * blockSize + 40, blockSize, blockSize);
                 }
-
                 g.setColor(Color.GRAY);
-                g.drawRect(
-                        col * blockSize,
-                        row * blockSize + 40,
-                        blockSize,
-                        blockSize
-                );
+                g.drawRect(col * blockSize, row * blockSize + 40, blockSize, blockSize);
             }
         }
     }
